@@ -1,32 +1,33 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { setConnect } from '../../redux/slices/logicSlice';
+import qs from 'qs';
+import { useSelector } from 'react-redux';
+import { useLocation, useParams } from 'react-router-dom';
+import Modal from '../../components/Modal';
 import socket from '../../socket';
 import NotFound from '../NotFound';
 import Room from '../Room';
 
 const CheckRoom = () => {
-  const dispatch = useDispatch();
+  const location = useLocation();
   const [exist, setExist] = React.useState(false);
   const { id } = useParams();
   const { connected } = useSelector((state) => state.logic);
+  const [modalVis, setModalVis] = React.useState(!connected);
+  const { key } = qs.parse(location.search.substring(1));
 
   React.useEffect(() => {
-    socket.emit('checkRoom', id);
+    socket.emit('checkRoom', { key });
     socket.on('getAnswerAboutRoom', (data) => {
       setExist(data);
     });
   }, []);
 
-  if (exist) {
-    if (!connected) {
-      socket.emit('join', id);
-      dispatch(setConnect());
-
-      return <Room videoId={id} modal={false} />;
-    }
+  if (exist && connected) {
     return <Room videoId={id} modal={true} />;
+  }
+
+  if (exist && !connected) {
+    return <>{modalVis && <Modal type="join" setModalVis={setModalVis} />}</>;
   }
 
   if (!exist) {

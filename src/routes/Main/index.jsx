@@ -3,25 +3,24 @@ import debounce from 'lodash.debounce';
 import axios from 'axios';
 
 import Header from '../../components/Header';
-import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setConnect, setVideoId, setVideoTitle } from '../../redux/slices/logicSlice';
-import socket from '../../socket';
+import { setVideoId, setVideoTitle } from '../../redux/slices/logicSlice';
 
 import styles from './Main.module.scss';
+import Modal from '../../components/Modal';
 
 const Main = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [search, setSearch] = React.useState('');
   const [searchUrl, setSearchUrl] = React.useState('ulbi');
   const [videos, setVideos] = React.useState([]);
+  const [modalVis, setModalVis] = React.useState(false);
 
   const debouncedSearch = React.useCallback(
     debounce((value) => {
       setSearchUrl(value);
-    }, 1000),
+    }, 500),
     [],
   );
 
@@ -42,12 +41,9 @@ const Main = () => {
       <div className={styles.video} key={obj.etag}>
         <img
           onClick={() => {
-            navigator.clipboard.writeText('Hello Alligator!');
             dispatch(setVideoId(obj.id.videoId));
-            navigate(obj.id.videoId);
-            socket.emit('join', obj.id.videoId);
-            dispatch(setConnect());
             dispatch(setVideoTitle(obj.snippet.title));
+            setModalVis(true);
           }}
           src={obj.snippet.thumbnails.medium.url}
           width={320}
@@ -60,6 +56,7 @@ const Main = () => {
 
   return (
     <>
+      {modalVis && <Modal setModalVis={setModalVis} type="create" />}
       <Header />
       <div className={styles.wrapper}>
         <div className={styles.search}>

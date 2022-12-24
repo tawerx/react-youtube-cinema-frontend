@@ -1,0 +1,26 @@
+html {
+  position: relative;
+}
+.alert {
+  background-color: rgb(20, 148, 233);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  width: 373px;
+  height: 125px;
+  border: 1px solid black;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+
+  &_message {
+    span {
+      font-size: 18px;
+      font-weight: 700;
+    }
+  }
+}
