@@ -11,9 +11,12 @@ import {
   setClearAdmintime,
   setClearChangePauseTime,
   setClearUsertime,
+  setDisconnect,
   setRole,
   setUsers,
   setUserTime,
+  setVideoId,
+  setVideoTitle,
 } from '../../redux/slices/logicSlice';
 import socket from '../../socket';
 import styles from './Room.module.scss';
@@ -53,6 +56,19 @@ const Room = ({ videoId }) => {
         }
       });
     }
+
+    return () => {
+      const { key } = qs.parse(location.search.substring(1));
+      socket.emit('dc', key);
+      dispatch(setClearAdmintime());
+      dispatch(setClearUsertime());
+      dispatch(setClearChangePauseTime());
+      dispatch(setDisconnect());
+      dispatch(setRole(null));
+      dispatch(setVideoId(''));
+      dispatch(setVideoTitle(''));
+      dispatch(setUsers([]));
+    };
   }, []);
 
   const resize = React.useCallback(() => {
