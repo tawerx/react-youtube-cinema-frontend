@@ -2,7 +2,7 @@ html {
   position: relative;
 }
 .alert {
-  background-color: rgb(20, 148, 233);
+  background-color: rgba(0, 0, 0, 1);
   position: absolute;
   top: 0;
   left: 0;
@@ -16,6 +16,7 @@ html {
   justify-content: center;
   align-items: center;
   z-index: 999;
+  color: white;
 
   &_message {
     span {

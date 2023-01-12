@@ -1,29 +1,27 @@
 import React from 'react';
-import qs from 'qs';
-import { useSelector } from 'react-redux';
-import { useLocation, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../components/Modal';
+import { setRoomId } from '../../redux/slices/roomSlice';
 import socket from '../../socket';
-import NotFound from '../NotFound';
-import Room from '../Room';
+import NotFound from '../../routes/NotFound';
+import Room from '../../routes/Room';
 
 const CheckRoom = () => {
-  const location = useLocation();
+  const dispatch = useDispatch();
   const [exist, setExist] = React.useState(false);
-  const { id } = useParams();
-  const { connected } = useSelector((state) => state.logic);
+  const { connected } = useSelector((state) => state.personal);
   const [modalVis, setModalVis] = React.useState(!connected);
-  const { key } = qs.parse(location.search.substring(1));
 
   React.useEffect(() => {
-    socket.emit('checkRoom', { key });
+    socket.emit('checkRoom', { roomId: window.location.pathname.substring(1) });
     socket.on('getAnswerAboutRoom', (data) => {
-      setExist(data);
+      dispatch(setRoomId(window.location.pathname.substring(1)));
+      setExist((prev) => (prev = data));
     });
   }, []);
 
   if (exist && connected) {
-    return <Room videoId={id} modal={true} />;
+    return <Room modal={true} />;
   }
 
   if (exist && !connected) {

@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
-import logic from './slices/logicSlice.js';
+import room from './slices/roomSlice.js';
+import personal from './slices/personalSlice.js';
 
 export const store = configureStore({
-  reducer: { logic },
+  reducer: { room, personal },
 });

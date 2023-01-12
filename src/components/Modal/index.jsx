@@ -1,27 +1,20 @@
 import React from 'react';
-import qs from 'qs';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import {
-  setConnect,
-  setNickName,
-  setRole,
-  setVideoId,
-  setVideoTitle,
-} from '../../redux/slices/logicSlice';
+
 import socket from '../../socket';
 import styles from './Modal.module.scss';
 import Alert from '../Alert';
+import { setVideoId, setVideoTitle } from '../../redux/slices/roomSlice';
+import { setConnect, setNickName, setRole } from '../../redux/slices/personalSlice';
 
 const Modal = ({ content, setModalVis, type }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const { roomId } = useSelector((state) => state.room);
+  const { nickName } = useSelector((state) => state.personal);
   const dispatch = useDispatch();
   const [userName, setUserName] = React.useState('');
   const [alertMsg, setAlertMsg] = React.useState('');
+  const [changeNickName, setChangeNickName] = React.useState(nickName);
   const [alertVis, setAlertVis] = React.useState(false);
-  const { videoId, videoTitle } = useSelector((state) => state.logic);
-  const { id } = useParams();
 
   React.useEffect(() => {
     socket.on('info', ({ videoId, videoTitle }) => {
@@ -31,70 +24,54 @@ const Modal = ({ content, setModalVis, type }) => {
     socket.on('role', (data) => dispatch(setRole(data)));
   }, []);
 
-  if (type === 'share') {
-    return (
-      <div className={styles.modal}>
-        <div className={styles.modal_content}>
-          <div className={styles.modal_title}>
-            <p>Поделись этой ссылкой с другом и смотрите вместе</p>
-          </div>
-          <div className={styles.modal_url}>
-            <span>{content}</span>
-          </div>
+  const onClickChangeNick = () => {
+    if (changeNickName != '') {
+      dispatch(setNickName(changeNickName));
+      socket.emit('setUserName', { nickName: changeNickName, roomId });
+    } else {
+      setAlertMsg('Вы не ввели никнейм');
+      setAlertVis(true);
+      setTimeout(() => setAlertVis(false), 2000);
+    }
+  };
 
-          <div className={styles.modal_buttons}>
-            <button
-              onClick={() => {
-                setModalVis(false);
-                navigator.clipboard.writeText(content);
-              }}>
-              Скопировать
-            </button>
-            <button onClick={() => setModalVis(false)}>Закрыть</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  if (type === 'create') {
+  if (type === 'share') {
     return (
       <>
         {alertVis && <Alert message={alertMsg} />}
         <div className={styles.modal}>
           <div className={styles.modal_content}>
-            <div className={styles.modal_title}>
+            <div className={styles.modal_change_nick}>
               <p>Введите никнейм</p>
-            </div>
-            <div className={styles.modal_nickname}>
               <input
-                type="text"
-                onChange={(e) => setUserName(e.target.value)}
-                value={userName}
+                onChange={(e) => setChangeNickName(e.target.value)}
+                value={changeNickName}
                 placeholder="Введите никнейм"
+                type="text"
+                maxLength="15"
               />
+              {changeNickName != nickName && <button onClick={onClickChangeNick}>Сохранить</button>}
             </div>
+            <div className={styles.modal_title}>
+              <p>Поделись этой ссылкой с другом и смотрите вместе</p>
+            </div>
+            <div className={styles.modal_url}>
+              <span>{content}</span>
+            </div>
+
             <div className={styles.modal_buttons}>
               <button
                 onClick={() => {
-                  if (userName != '') {
-                    const key = (+new Date()).toString(16);
-                    setModalVis(false);
-                    dispatch(setNickName(userName));
-                    navigate(`${videoId}?key=${key}`);
-                    socket.emit('create', {
-                      videoId: videoId || id,
-                      userName,
-                      videoTitle,
-                      key,
-                    });
-                    dispatch(setConnect());
-                  } else {
-                    setAlertMsg('Вы не ввели никнейм');
-                    setAlertVis(true);
-                    setTimeout(() => setAlertVis(false), 2000);
-                  }
+                  navigator.clipboard.writeText(content);
                 }}>
-                Создать комнату
+                Скопировать
+              </button>
+              <button
+                onClick={() => {
+                  setModalVis(false);
+                  socket.emit('setUserName', { nickName, roomId });
+                }}>
+                Закрыть
               </button>
             </div>
           </div>
@@ -118,16 +95,16 @@ const Modal = ({ content, setModalVis, type }) => {
                 onChange={(e) => setUserName(e.target.value)}
                 value={userName}
                 placeholder="Введите никнейм"
+                maxLength="15"
               />
             </div>
             <div className={styles.modal_buttons}>
               <button
                 onClick={() => {
                   if (userName != '') {
-                    const { key } = qs.parse(location.search.substring(1));
                     setModalVis(false);
                     dispatch(setNickName(userName));
-                    socket.emit('join', { key, userName, videoId, videoTitle });
+                    socket.emit('join', { roomId, userName });
                     setTimeout(() => dispatch(setConnect()), 100);
                   } else {
                     setAlertMsg('Вы не ввели никнейм');

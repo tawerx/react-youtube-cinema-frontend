@@ -1,38 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
+  roomId: null,
   videoId: '',
-  connected: false,
   videoTitle: '',
-  nickName: null,
-  role: null,
   users: [],
   adminId: null,
   userId: null,
   changeTime: null,
 };
 
-export const logicSlice = createSlice({
-  name: 'logic',
+export const roomSlice = createSlice({
+  name: 'room',
   initialState,
   reducers: {
     setVideoId: (state, action) => {
       state.videoId = action.payload;
     },
-    setConnect: (state) => {
-      state.connected = true;
-    },
-    setDisconnect: (state) => {
-      state.connected = false;
-    },
     setVideoTitle: (state, action) => {
       state.videoTitle = action.payload;
-    },
-    setNickName: (state, action) => {
-      state.nickName = action.payload;
-    },
-    setRole: (state, action) => {
-      state.role = action.payload;
     },
     setUsers: (state, action) => {
       state.users = action.payload;
@@ -55,16 +41,15 @@ export const logicSlice = createSlice({
     setClearChangePauseTime: (state) => {
       clearInterval(state.changeTime);
     },
+    setRoomId: (state, action) => {
+      state.roomId = action.payload;
+    },
   },
 });
 
 export const {
   setVideoId,
-  setConnect,
-  setDisconnect,
   setVideoTitle,
-  setNickName,
-  setRole,
   setUsers,
   setAdminTime,
   setClearAdmintime,
@@ -72,6 +57,7 @@ export const {
   setClearUsertime,
   setChangePauseTime,
   setClearChangePauseTime,
-} = logicSlice.actions;
+  setRoomId,
+} = roomSlice.actions;
 
-export default logicSlice.reducer;
+export default roomSlice.reducer;

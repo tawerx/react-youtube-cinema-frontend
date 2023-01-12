@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
+import CheckRoom from './middleware/CheckRoom';
 
-import CheckRoom from './routes/CheckRoom';
 import Main from './routes/Main';
 
 const App = () => {
