@@ -5,6 +5,7 @@ import { setRoomId } from '../../redux/slices/roomSlice';
 import socket from '../../socket';
 import NotFound from '../../routes/NotFound';
 import Room from '../../routes/Room';
+import { setShowTutorial } from '../../redux/slices/tutorialSlice';
 
 const CheckRoom = () => {
   const dispatch = useDispatch();
@@ -13,6 +14,15 @@ const CheckRoom = () => {
   const [modalVis, setModalVis] = React.useState(!connected);
 
   React.useEffect(() => {
+    if (
+      localStorage.getItem('infoTutorial') == null ||
+      localStorage.getItem('infoTutorial') == true
+    ) {
+      dispatch(setShowTutorial(true));
+    } else {
+      dispatch(setShowTutorial(false));
+    }
+
     socket.emit('checkRoom', { roomId: window.location.pathname.substring(1) });
     socket.on('getAnswerAboutRoom', (data) => {
       dispatch(setRoomId(window.location.pathname.substring(1)));

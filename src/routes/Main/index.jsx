@@ -1,7 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import Header from '../../components/Header';
 import { setConnect, setNickName, setRole } from '../../redux/slices/personalSlice';
 import { setRoomId } from '../../redux/slices/roomSlice';
 import socket from '../../socket';
@@ -30,7 +29,9 @@ const Main = () => {
 
   return (
     <div className={styles.wrapper}>
-      <Header />
+      <div className={styles.header} onClick={() => navigate('/')}>
+        <span>YouTube Cinema</span>
+      </div>
       <div className={styles.create_room}>
         <button onClick={onClickCreate} disabled={disableBut}>
           Создать комнату

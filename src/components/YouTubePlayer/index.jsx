@@ -111,7 +111,7 @@ const YouTubePlayer = ({ setPlayer }) => {
                       time: playerRef.current.getCurrentTime(),
                       roomId,
                     }),
-                  0,
+                  250,
                 ),
               ),
             );
@@ -130,7 +130,7 @@ const YouTubePlayer = ({ setPlayer }) => {
                       roomId,
                       time: playerRef.current.getCurrentTime(),
                     }),
-                  0,
+                  250,
                 ),
               ),
             );

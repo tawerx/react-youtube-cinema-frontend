@@ -102,3 +102,18 @@
     width: 200px;
   }
 }
+
+#copy_click {
+  color: white;
+  animation: copyClick 1s ease-in 0s forwards;
+}
+
+@keyframes copyClick {
+  from {
+    box-shadow: rgba(255, 255, 255, 0.1) 0px 0px 4px;
+  }
+  to {
+    box-shadow: rgba(0, 255, 0, 1) 0px 0px 20px;
+    background-color: rgba(0, 255, 0, 0.6);
+  }
+}

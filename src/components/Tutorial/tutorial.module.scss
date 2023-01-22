@@ -1,206 +1,130 @@
 .tutorial {
-  width: 250%;
-  height: 70%;
-
-  @media (max-width: 980px) {
-    height: 350px;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  background-color: rgba(0, 0, 0, 0.4);
+  text-align: center;
+  button {
+    cursor: pointer;
+    border: 0px;
+    width: 70px;
+    height: 25px;
+    font-size: 17px;
+    font-weight: 600;
+    background-color: rgb(46, 46, 46);
+    color: white;
   }
-  @media (max-width: 500px) {
-    height: 500px;
+}
+
+.tutorial_search {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  color: black;
+  font-size: 18px;
+  font-weight: 600;
+  top: 150px;
+  left: 25%;
+
+  span {
+    position: absolute;
+    width: 190px;
+    top: 80px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+
+  button {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+  @media (max-width: 470px) {
+    left: 8vw;
   }
 }
 
-.tutorial_search_arrow {
-  width: 150px;
-  height: 5px;
-  background-color: rgba(255, 255, 255, 0.7);
+.tutorial_offer {
   position: relative;
-  top: 90px;
-  left: 300px;
-  transform: rotate(-50deg);
-  &:before {
+  width: 300px;
+  height: 300px;
+  color: black;
+  font-size: 18px;
+  font-weight: 600;
+  top: 100px;
+  left: 33%;
+
+  span {
     position: absolute;
-    top: 9px;
-    right: -5px;
-    content: '';
-    transform: rotate(-45deg);
-    width: 30px;
-    height: 5px;
-    background-color: rgba(255, 255, 255, 0.7);
+    width: 210px;
+    top: 80px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
   }
 
-  &:after {
-    content: '';
+  &_buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
     position: absolute;
-    top: -9px;
-    right: -5px;
-    transform: rotate(45deg);
-    width: 30px;
-    height: 5px;
-    background-color: rgba(255, 255, 255, 0.7);
+    bottom: 70px;
+    justify-content: center;
   }
 
-  p {
-    position: absolute;
-    color: rgba(255, 255, 255, 0.6);
-    transform: rotate(50deg);
-    width: 300px;
-    top: 0px;
-    left: -200px;
-  }
-  @media (max-width: 700px) {
-    left: 9%;
-    p {
-      width: 250px;
-    }
-  }
-  @media (max-width: 500px) {
-    width: 50px;
-    transform: rotate(-90deg);
-    left: 20%;
-    top: 30px;
-    p {
-      transform: rotate(90deg);
-      top: -60px;
-    }
+  @media (max-width: 470px) {
+    left: 10vw;
   }
 }
-.tutorial_info_arrow {
-  width: 150px;
-  height: 5px;
-  background-color: rgba(255, 255, 255, 0.7);
+
+.tutorial_info {
   position: relative;
-  top: 90px;
-  left: 70%;
-  transform: rotate(0);
-  &:before {
+  width: 300px;
+  height: 300px;
+  color: black;
+  font-size: 18px;
+  font-weight: 600;
+  top: 40%;
+  left: 55%;
+
+  span {
     position: absolute;
-    top: 9px;
-    right: -5px;
-    content: '';
-    transform: rotate(-45deg);
-    width: 30px;
-    height: 5px;
-    background-color: rgba(255, 255, 255, 0.7);
+    width: 210px;
+    top: 80px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
   }
 
-  &:after {
-    content: '';
+  &_buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
     position: absolute;
-    top: -9px;
-    right: -5px;
-    transform: rotate(45deg);
-    width: 30px;
-    height: 5px;
-    background-color: rgba(255, 255, 255, 0.7);
+    bottom: 70px;
+    justify-content: center;
   }
 
-  p {
-    position: absolute;
-    color: rgba(255, 255, 255, 0.6);
-    width: 300px;
-    top: 25px;
-    left: -70px;
+  @media (max-width: 1660px) {
+    top: 560px;
+    left: 45%;
   }
 
-  @media (max-width: 1200px) {
-    width: 0px;
-    left: 112%;
-    &:after,
-    &:before {
-      width: 0px;
-    }
-    p {
-      width: 250px;
-    }
-  }
   @media (max-width: 980px) {
-    top: 450px;
-    left: 6%;
-  }
-  @media (max-width: 700px) {
-    transform: rotate(120deg);
-    width: 110px;
-    top: 220px;
-    left: 23%;
-    &:after,
-    &:before {
-      width: 30px;
-    }
-    p {
-      transform: rotate(-120deg);
-      top: -40px;
-      left: -200px;
-    }
-  }
-  @media (max-width: 500px) {
-    width: 50px;
-    transform: rotate(90deg);
-    left: 20%;
-    top: 400px;
-    p {
-      transform: rotate(-90deg);
-      top: -70px;
-      left: -210px;
-    }
-  }
-}
-.tutorial_offer_arrow {
-  width: 150px;
-  height: 5px;
-  background-color: rgba(255, 255, 255, 0.7);
-  position: relative;
-  top: 450px;
-  left: 70%;
-  &:before {
-    position: absolute;
-    top: 9px;
-    right: -5px;
-    content: '';
-    transform: rotate(-45deg);
-    width: 30px;
-    height: 5px;
-    background-color: rgba(255, 255, 255, 0.7);
+    top: 600px;
+    left: 25%;
   }
 
-  &:after {
-    content: '';
-    position: absolute;
-    top: -9px;
-    right: -5px;
-    transform: rotate(45deg);
-    width: 30px;
-    height: 5px;
-    background-color: rgba(255, 255, 255, 0.7);
-  }
-
-  p {
-    position: absolute;
-    color: rgba(255, 255, 255, 0.6);
-    width: 300px;
-    top: 25px;
-    left: -70px;
-  }
-
-  @media (max-width: 1200px) {
-    width: 0px;
-    left: 112%;
-    &:after,
-    &:before {
-      width: 0px;
-    }
-    p {
-      width: 250px;
-    }
-  }
-  @media (max-width: 980px) {
-    left: 26%;
-  }
-  @media (max-width: 700px) {
-    left: 16%;
-  }
-  @media (max-width: 500px) {
-    left: 15%;
+  @media (max-width: 760px) {
     top: 650px;
+  }
+  @media (max-width: 470px) {
+    left: 5vw;
   }
 }

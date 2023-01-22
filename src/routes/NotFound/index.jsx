@@ -1,12 +1,15 @@
 import React from 'react';
-import Header from '../../components/Header';
+import { useNavigate } from 'react-router-dom';
 
 import styles from './NotFound.module.scss';
 
 const NotFound = () => {
+  const navigate = useNavigate();
   return (
     <>
-      <Header />
+      <div className={styles.header} onClick={() => navigate('/')}>
+        <span>YouTube Cinema</span>
+      </div>
       <div className={styles.not_found}>
         <div className={styles.not_found_content}>
           <span>
