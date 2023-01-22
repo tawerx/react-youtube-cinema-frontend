@@ -91,7 +91,7 @@ const Room = () => {
   return (
     <div className={styles.room_container}>
       {modalVis && <Modal setModalVis={setModalVis} content={window.location.href} type="share" />}
-      {showTutorial && <Tutorial />}
+      {showTutorial && !modalVis && <Tutorial />}
       <Header
         setRelatedVideos={setRelatedVideos}
         offerVideos={offerVideos}

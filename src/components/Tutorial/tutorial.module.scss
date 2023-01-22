@@ -107,7 +107,7 @@
     flex-direction: row;
     gap: 10px;
     position: absolute;
-    bottom: 70px;
+    bottom: 90px;
     justify-content: center;
   }
 
@@ -117,14 +117,14 @@
   }
 
   @media (max-width: 980px) {
-    top: 600px;
-    left: 25%;
+    top: 50px;
+    svg {
+      transform: rotate(0deg);
+    }
   }
 
   @media (max-width: 760px) {
-    top: 650px;
-  }
-  @media (max-width: 470px) {
-    left: 5vw;
+    top: 100px;
+    left: (calc((100vw - 300px) / 2));
   }
 }
