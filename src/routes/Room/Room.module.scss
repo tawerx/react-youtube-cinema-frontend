@@ -20,7 +20,7 @@
     color: rgba(255, 255, 255, 0.7);
   }
 
-  @media (max-width: 980px) {
+  @media (max-width: 1330px) {
     flex-direction: column;
     align-items: center;
   }
@@ -51,6 +51,7 @@
 
 .progress_admin {
   width: 250%;
+  height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;

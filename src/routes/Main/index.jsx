@@ -1,35 +1,41 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { setConnect, setNickName, setRole } from '../../redux/slices/personalSlice';
-import { setRoomId } from '../../redux/slices/roomSlice';
-import socket from '../../socket';
-import styles from './Main.module.scss';
+import React from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  setConnect,
+  setNickName,
+  setRole,
+} from "../../redux/slices/personalSlice";
+import { setRoomId } from "../../redux/slices/roomSlice";
+import socket from "../../socket";
+import styles from "./Main.module.scss";
 
 const Main = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [disableBut, setDisableBut] = React.useState(false);
+
   const onClickCreate = () => {
-    setDisableBut((prev) => (prev = true));
+    socket.connect();
+    setDisableBut(true);
     const hash = Math.random().toString(30).substring(2);
     const name = `User#${hash.substring(hash.length / 2)}`;
     dispatch(setNickName(name));
-    socket.emit('createRoom', { name });
+    socket.emit("createRoom", { name });
   };
 
   React.useEffect(() => {
-    socket.on('created', ({ roomId }) => {
+    socket.on("created", ({ roomId }) => {
       dispatch(setRoomId(roomId));
       dispatch(setConnect());
       navigate(`/${roomId}`);
-      dispatch(setRole('admin'));
+      dispatch(setRole("admin"));
     });
   }, []);
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.header} onClick={() => navigate('/')}>
+      <div className={styles.header} onClick={() => navigate("/")}>
         <span>YouTube Cinema</span>
       </div>
       <div className={styles.create_room}>
@@ -45,7 +51,8 @@ const Main = () => {
               data-name="Livello 1"
               id="Livello_1"
               viewBox="0 0 128 128"
-              xmlns="http://www.w3.org/2000/svg">
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <title />
               <path d="M64,0a64,64,0,1,0,64,64A64.07,64.07,0,0,0,64,0Zm0,122a58,58,0,1,1,58-58A58.07,58.07,0,0,1,64,122Z" />
               <path d="M90,61H67V38a3,3,0,0,0-6,0V61H38a3,3,0,0,0,0,6H61V90a3,3,0,0,0,6,0V67H90a3,3,0,0,0,0-6Z" />
@@ -62,7 +69,8 @@ const Main = () => {
               stroke="currentColor"
               strokeWidth="2"
               strokeLinecap="round"
-              strokeLinejoin="round">
+              strokeLinejoin="round"
+            >
               <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
               <polyline points="16 6 12 2 8 6" />
               <line x1="12" y1="2" x2="12" y2="15" />

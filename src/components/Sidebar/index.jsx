@@ -1,11 +1,12 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { setVideoId, setVideoTitle } from '../../redux/slices/roomSlice';
-import socket from '../../socket.js';
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { setVideoId, setVideoTitle } from "../../redux/slices/roomSlice";
+import socket from "../../socket.js";
 
-import styles from './sidebar.module.scss';
+import styles from "./sidebar.module.scss";
+import Search from "../Search/index.jsx";
 
-const Sidebar = ({ player, relatedVideos }) => {
+const Sidebar = ({ player, offerVideos, setOfferVideos }) => {
   const dispatch = useDispatch();
   const { videoId, roomId, users } = useSelector((state) => state.room);
   const { infoTutorial } = useSelector((state) => state.tutorial);
@@ -14,7 +15,7 @@ const Sidebar = ({ player, relatedVideos }) => {
   const [hideDiv, setHideDiv] = React.useState(false);
 
   const onClickSelectVideo = (videoId, title, image) => {
-    if (role === 'admin') {
+    if (role === "admin") {
       dispatch(setVideoId(videoId));
       dispatch(setVideoTitle(title));
       const selectedVideo = {
@@ -22,35 +23,38 @@ const Sidebar = ({ player, relatedVideos }) => {
         title,
         image,
       };
-      socket.emit('setVideo', { roomId, selectedVideo });
+      socket.emit("setVideo", { roomId, selectedVideo });
     } else {
       const offerVideo = {
         title,
         videoId,
         image,
       };
-      socket.emit('setOfferVideo', { roomId, offerVideo });
+      socket.emit("setOfferVideo", { roomId, offerVideo });
     }
   };
   return (
     <div className={styles.sidebar}>
-      <button
-        className={styles.sync}
-        onClick={() => {
-          if (videoId) {
-            if (role === 'user') {
-              socket.emit('syncUser', { roomId });
+      {player && (
+        <button
+          className={styles.sync}
+          onClick={() => {
+            if (videoId) {
+              if (role === "user") {
+                socket.emit("syncUser", { roomId });
+              }
+              if (role === "admin") {
+                socket.emit("syncAdmin", {
+                  roomId,
+                  time: player.getCurrentTime(),
+                });
+              }
             }
-            if (role === 'admin') {
-              socket.emit('syncAdmin', {
-                roomId,
-                time: player.getCurrentTime(),
-              });
-            }
-          }
-        }}>
-        Синхронизироваться
-      </button>
+          }}
+        >
+          Синхронизироваться
+        </button>
+      )}
 
       {!hideDiv && (
         <div
@@ -60,26 +64,40 @@ const Sidebar = ({ player, relatedVideos }) => {
               : showUsers
               ? styles.sidebar_video_info
               : `${styles.sidebar_video_info} ${styles.hide}`
-          }>
+          }
+        >
           <ul>
             {users.map((obj) => {
               let time;
-              if (obj.time > 60) {
-                time = `${Math.floor(obj.time / 60)}:${
-                  obj.time - Math.floor(obj.time / 60) * 60 < 10
-                    ? `0${String(obj.time - Math.floor(obj.time / 60) * 60).slice(0, 1)}`
-                    : String(obj.time - Math.floor(obj.time / 60) * 60).slice(0, 2)
-                }:${String(obj.time - Math.floor(obj.time)).slice(2, 4)}`;
+              const objTime = obj.current_video_time;
+
+              if (objTime > 3600) {
+                time = `${Math.trunc(objTime / 3600)}:${
+                  Math.trunc(
+                    (objTime - Math.trunc(objTime / 3600) * 3600) / 60
+                  ) < 10
+                    ? "0" +
+                      Math.trunc(
+                        (objTime - Math.trunc(objTime / 3600) * 3600) / 60
+                      )
+                    : Math.trunc(
+                        (objTime - Math.trunc(objTime / 3600) * 3600) / 60
+                      )
+                }:${
+                  Math.trunc(objTime % 60) < 10
+                    ? "0" + Math.trunc(objTime % 60)
+                    : Math.trunc(objTime % 60)
+                }`;
               } else {
-                time = `${
-                  obj.time < 10 ? String(obj.time).slice(0, 1) : String(obj.time).slice(0, 2)
-                }${
-                  obj.time != 0 ? ':' + String(obj.time - Math.floor(obj.time)).slice(2, 4) : ':00'
+                time = `${Math.trunc(objTime / 60)}:${
+                  Math.trunc(objTime % 60) < 10
+                    ? "0" + Math.trunc(objTime % 60)
+                    : Math.trunc(objTime % 60)
                 }`;
               }
               return (
-                <li key={obj.id}>{`${obj.userName}${
-                  obj.role == 'admin' ? '(admin)' : ''
+                <li key={obj.user_id}>{`${obj.username}${
+                  obj.rolle == "admin" ? "(admin)" : ""
                 } - ${time}`}</li>
               );
             })}
@@ -105,30 +123,11 @@ const Sidebar = ({ player, relatedVideos }) => {
             setHideDiv((prev) => (prev = false));
           }
         }}
-        disabled={infoTutorial}>
-        {!showUsers ? 'Показать' : 'Скрыть'}
+        disabled={infoTutorial}
+      >
+        {!showUsers ? "Показать" : "Скрыть"}
       </button>
-      {relatedVideos.length != 0 && (
-        <div className={styles.sidebar_offer_video_list}>
-          {relatedVideos.map((obj) => {
-            return (
-              <div
-                onClick={() =>
-                  onClickSelectVideo(
-                    obj.id.videoId,
-                    obj.snippet.title,
-                    obj.snippet.thumbnails.medium.url,
-                  )
-                }
-                key={obj.id.videoId}
-                className={styles.sidebar_offer_video_list_item}>
-                <img src={obj.snippet.thumbnails.medium.url} height={94} width={168} />
-                <span>{obj.snippet.title}</span>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <Search offerVideos={offerVideos} setOfferVideos={setOfferVideos} />
     </div>
   );
 };

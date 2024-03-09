@@ -1,6 +1,6 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import YouTube from 'react-youtube';
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import YouTube from "react-youtube";
 import {
   setAdminTime,
   setChangePauseTime,
@@ -8,8 +8,8 @@ import {
   setClearChangePauseTime,
   setClearUsertime,
   setUserTime,
-} from '../../redux/slices/roomSlice';
-import socket from '../../socket.js';
+} from "../../redux/slices/roomSlice";
+import socket from "../../socket.js";
 
 const YouTubePlayer = ({ setPlayer }) => {
   const dispatch = useDispatch();
@@ -22,26 +22,26 @@ const YouTubePlayer = ({ setPlayer }) => {
   React.useEffect(() => {
     resize();
 
-    if (role == 'user') {
-      socket.on('syncUsersByAdmin', (data) => {
+    if (role == "user") {
+      socket.on("syncUsersByAdmin", (data) => {
         if (playerRef.current) {
           playerRef.current.seekTo(data, true);
         }
       });
 
-      socket.on('syncUsersToRoomTime', (data) => {
+      socket.on("syncUsersToRoomTime", (data) => {
         if (playerRef.current) {
           playerRef.current.seekTo(data, true);
         }
       });
     }
 
-    socket.on('play', () => {
+    socket.on("play", () => {
       if (playerRef.current) {
         playerRef.current.playVideo();
       }
     });
-    socket.on('pause', () => {
+    socket.on("pause", () => {
       if (playerRef.current) {
         playerRef.current.pauseVideo();
       }
@@ -49,7 +49,7 @@ const YouTubePlayer = ({ setPlayer }) => {
   }, []);
 
   const resize = React.useCallback(() => {
-    window.addEventListener('resize', (e) => {
+    window.addEventListener("resize", (e) => {
       setWidthSize(e.target.outerWidth);
     });
   }, []);
@@ -59,13 +59,16 @@ const YouTubePlayer = ({ setPlayer }) => {
     setPlayer(e.target);
   };
   const opts = {
-    height: window.screen.width < 980 ? window.screen.height * 0.4 : window.screen.height * 0.7,
+    height:
+      window.screen.width < 980
+        ? window.screen.height * 0.4
+        : window.screen.height * 0.7,
     width:
-      window.screen.width < 1350 && window.screen.width > 980
+      window.screen.width > 1330
         ? widthSize * 0.6
-        : window.screen.width < 980
+        : window.screen.width < 1330
         ? widthSize * 0.95
-        : widthSize * 0.7,
+        : widthSize * 0.6,
   };
 
   return (
@@ -75,8 +78,8 @@ const YouTubePlayer = ({ setPlayer }) => {
         onReady={onReady}
         opts={opts}
         onPause={() => {
-          if (role === 'admin') {
-            socket.emit('adminPause', { roomId });
+          if (role === "admin") {
+            socket.emit("adminPause", { roomId });
           }
 
           let curTime = 0;
@@ -85,39 +88,39 @@ const YouTubePlayer = ({ setPlayer }) => {
             setChangePauseTime(
               setInterval(() => {
                 if (playerRef.current.getCurrentTime() !== curTime) {
-                  socket.emit('socketTime', {
+                  socket.emit("socketTime", {
                     roomId,
                     time: playerRef.current.getCurrentTime(),
                   });
-                  socket.on('currrentSocketTime', (data) => (curTime = data));
+                  socket.on("currrentSocketTime", (data) => (curTime = data));
                 }
-              }, 500),
-            ),
+              }, 1000)
+            )
           );
         }}
         onPlay={() => {
-          if (role === 'admin') {
-            socket.emit('adminPlay', { roomId });
+          if (role === "admin") {
+            socket.emit("adminPlay", { roomId });
           }
           dispatch(setClearChangePauseTime());
         }}
         onStateChange={(e) => {
-          if (e.data == 1 && role == 'admin' && !data3) {
+          if (e.data == 1 && role == "admin" && !data3) {
             dispatch(
               setAdminTime(
                 setInterval(
                   () =>
-                    socket.emit('roomTime', {
+                    socket.emit("roomTime", {
                       time: playerRef.current.getCurrentTime(),
                       roomId,
                     }),
-                  250,
-                ),
-              ),
+                  1000
+                )
+              )
             );
             setData3(true);
           }
-          if ((e.data == 2 || e.data == 0) && role == 'admin') {
+          if ((e.data == 2 || e.data == 0) && role == "admin") {
             dispatch(setClearAdmintime());
             setData3(false);
           }
@@ -126,13 +129,13 @@ const YouTubePlayer = ({ setPlayer }) => {
               setUserTime(
                 setInterval(
                   () =>
-                    socket.emit('socketTime', {
+                    socket.emit("socketTime", {
                       roomId,
                       time: playerRef.current.getCurrentTime(),
                     }),
-                  250,
-                ),
-              ),
+                  500
+                )
+              )
             );
             setData3(true);
           }

@@ -1,9 +1,9 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   roomId: null,
-  videoId: '',
-  videoTitle: '',
+  videoId: "",
+  videoTitle: "",
   users: [],
   adminId: null,
   userId: null,
@@ -11,7 +11,7 @@ const initialState = {
 };
 
 export const roomSlice = createSlice({
-  name: 'room',
+  name: "room",
   initialState,
   reducers: {
     setVideoId: (state, action) => {
@@ -44,6 +44,16 @@ export const roomSlice = createSlice({
     setRoomId: (state, action) => {
       state.roomId = action.payload;
     },
+    setUsersTime: (state, action) => {
+      const newUsers = action.payload;
+      newUsers.forEach(({ user_id, current_video_time }) => {
+        state.users.forEach((obj) => {
+          if (obj.user_id == user_id) {
+            obj.current_video_time = current_video_time;
+          }
+        });
+      });
+    },
   },
 });
 
@@ -58,6 +68,7 @@ export const {
   setChangePauseTime,
   setClearChangePauseTime,
   setRoomId,
+  setUsersTime,
 } = roomSlice.actions;
 
 export default roomSlice.reducer;

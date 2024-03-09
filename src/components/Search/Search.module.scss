@@ -1,0 +1,196 @@
+.search {
+  position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    max-height: 50vh;
+  }
+  
+  .search_video {
+    position: relative;
+    input {
+      width: 410px;
+      height: 40px;
+      border: 0px;
+      border-radius: 5px;
+      padding: 5px;
+      padding-right: 40px;
+      color: black;
+      font-size: 20px;
+      overflow: hidden;
+
+      @media (max-width: 550px) {
+        width: 60vw;
+      }
+    }
+    svg {
+      width: 25px;
+      height: 25px;
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      bottom: 0px;
+      margin: auto 7px;
+      cursor: pointer;
+      opacity: 0.3;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+
+    .offer_svg {
+        position: absolute;
+        right: -50px;
+        width: 35px;
+        height: 35px;
+        top: -5px;
+    }
+
+    &.tutorial {
+      border: 5px solid #0077ff;
+      border-radius: 10px;
+      z-index: 999;
+    }
+  }
+
+  .search_list {
+    z-index: 999;
+    width: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 5px;
+    span {
+      font-size: 15px;
+    }
+    &_video {
+      cursor: pointer;
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      width: 100%;
+      color: white;
+    }
+    img {
+      border-radius: 10px;
+    }
+    @media (max-width: 470px) {
+      span {
+        font-size: 13px;
+      }
+    }
+  }
+  
+  .offer_videos {
+    svg {
+      cursor: pointer;
+      width: 35px;
+      height: 35px;
+      opacity: 0.5;
+      position: relative;
+      top: 2px;
+  
+      &:hover {
+        opacity: 0.8;
+      }
+      @media (max-width: 760px) {
+        width: 35px;
+        height: 35px;
+      }
+    }
+  
+    &_list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 5px;
+      z-index: 999;
+      max-height: 400px;
+      overflow: auto;
+      width: 90%;
+
+      &_item {
+        cursor: pointer;
+        color: white;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        font-size: 15px;
+  
+        img {
+          border-radius: 10px;
+        }
+        @media (max-width: 470px) {
+          font-size: 13px;
+        }
+      }
+  
+      &.empty {
+        background-color: white;
+        width: 400px;
+        height: 300px;
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        color: rgba(0, 0, 0, 0.6);
+  
+        span {
+          font-size: 20px;
+          font-weight: 700;
+        }
+  
+        svg {
+          width: 190px;
+          height: 190px;
+          opacity: 0.8;
+          cursor: default;
+        }
+  
+        @media (max-width: 1050px) {
+          left: 0px;
+        }
+  
+  
+        @media (max-width: 550px) {
+          width: 90vw;
+          font-size: 13px;
+        }
+      }
+    }
+    &.tutorial {
+      border: 5px solid #0077ff;
+      border-radius: 10px;
+      padding: 3px;
+      z-index: 999;
+      svg {
+        opacity: 1;
+      }
+    }
+  }
+  
+  .search_video_tutorial {
+    cursor: pointer;
+    width: 410px;
+    height: 40px;
+    border: 0px;
+    border-radius: 5px;
+    padding: 5px;
+    padding-right: 40px;
+    color: black;
+    background-color: white;
+    font-size: 20px;
+    overflow: hidden;
+  
+    @media (max-width: 470px) {
+      width: 60vw;
+    }
+  }
+
+  
