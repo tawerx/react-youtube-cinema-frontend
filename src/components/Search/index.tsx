@@ -1,25 +1,43 @@
 import React from "react";
 import styles from "./Search.module.scss";
 import { useDispatch, useSelector } from "react-redux";
-import socket from "../../socket";
-import debounce from "lodash.debounce";
 import axios from "axios";
-import { setVideoId, setVideoTitle } from "../../redux/slices/roomSlice";
+import {
+  setChannel,
+  setVideoId,
+  setVideoTitle,
+} from "../../redux/slices/roomSlice";
+import { debounce } from "@mui/material/utils";
+import {
+  UserRole,
+  type OfferVideo,
+  type YouTubeApiV3ListItemResponse,
+} from "../../shared/types";
+import type { RootState } from "../../redux/store";
+import { getSocket } from "../../socket";
 
-const Search = ({ offerVideos, setOfferVideos }) => {
+interface CompProps {
+  offerVideos: OfferVideo[];
+  setOfferVideos: React.Dispatch<React.SetStateAction<OfferVideo[]>>;
+}
+
+const Search = ({ offerVideos, setOfferVideos }: CompProps) => {
+  const socket = getSocket();
   const dispatch = useDispatch();
   const [search, setSearch] = React.useState("");
   const [searchUrl, setSearchUrl] = React.useState("tom jerry");
-  const [searchedVideos, setSearchedVideos] = React.useState([]);
+  const [searchedVideos, setSearchedVideos] = React.useState<
+    YouTubeApiV3ListItemResponse[]
+  >([]);
   const [searchVis, setSearchVis] = React.useState(false);
   const [showOffer, setShowOffer] = React.useState(false);
   const { searchTutorial, offerTutorial } = useSelector(
-    (state) => state.tutorial
+    (state: RootState) => state.tutorial
   );
-  const { roomId } = useSelector((state) => state.room);
-  const { role } = useSelector((state) => state.personal);
+  const { roomId } = useSelector((state: RootState) => state.room);
+  const { role } = useSelector((state: RootState) => state.personal);
 
-  const searchRef = React.useRef(null);
+  const searchRef = React.useRef<HTMLInputElement>(null);
   const offerRef = React.useRef(null);
   const offerSvgRef = React.useRef(null);
 
@@ -29,39 +47,46 @@ const Search = ({ offerVideos, setOfferVideos }) => {
     }, 500),
     []
   );
-  const onChangeSearch = (e) => {
+  const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch((prev) => (prev = e.target.value));
     debouncedSearch(e.target.value);
   };
 
-  const onClickSelectVideo = (title, videoId, image, _offer) => {
-    if (role === "admin") {
+  const onClickSelectVideo = (
+    title: string,
+    videoId: string,
+    image: string,
+    channel: string,
+    _offer?: boolean
+  ) => {
+    const selectedVideo = {
+      videoId,
+      title,
+      image,
+      channel,
+    };
+
+    if (role === UserRole.ADMIN) {
       dispatch(setVideoId(videoId));
       dispatch(setVideoTitle(title));
-      const selectedVideo = {
-        videoId,
-        title,
-        image,
-      };
+      dispatch(setChannel(channel));
+
       socket.emit("setVideo", { roomId, selectedVideo });
-      if (_offer) {
-        setOfferVideos(offerVideos.filter((obj) => obj.videoId != videoId));
-        socket.emit("deleteOfferVideo", { roomId, videoId });
-      }
+      // if (_offer) {
+      //   setOfferVideos(offerVideos.filter((obj) => obj.videoId != videoId));
+      //   socket.emit("deleteOfferVideo", { roomId, videoId });
+      // }
     } else {
-      const offerVideo = {
-        title,
-        videoId,
-        image,
-      };
-      socket.emit("setOfferVideo", { roomId, offerVideo });
+      socket.emit("setOfferVideo", { roomId, selectedVideo });
     }
   };
 
   React.useEffect(() => {
     axios
       .get(
-        `https://www.googleapis.com/youtube/v3/search?key=${process.env.REACT_APP_API_KEY}&type=video&part=snippet&maxResults=9&q=${searchUrl}`
+        `https://www.googleapis.com/youtube/v3/search?key=${
+          import.meta.env.VITE_YOUTUBE_API_KEY
+        }&type=video&part=snippet&maxResults=9&q=${searchUrl}`
       )
       .then((res) => {
         setSearchedVideos(res.data.items);
@@ -162,7 +187,8 @@ const Search = ({ offerVideos, setOfferVideos }) => {
                   onClickSelectVideo(
                     obj.snippet.title,
                     obj.id.videoId,
-                    obj.snippet.thumbnails.medium.url
+                    obj.snippet.thumbnails.medium.url,
+                    obj.snippet.channelTitle
                   )
                 }
                 className={styles.search_list_video}
@@ -185,29 +211,30 @@ const Search = ({ offerVideos, setOfferVideos }) => {
             : styles.offer_videos
         }
       >
-        {showOffer && offerVideos.length > 0 && (
+        {/* {showOffer && offerVideos.length > 0 && (
           <div ref={offerRef} className={styles.offer_videos_list}>
-            {offerVideos.map((obj) => {
+            {offerVideos.map((video) => {
               return (
                 <div
                   onClick={() =>
                     onClickSelectVideo(
-                      obj.video_title,
-                      obj.video_id,
-                      obj.img_src,
+                      video.title,
+                      video.videoId,
+                      video.image,
+                      video.snippet.channelTitle,
                       true
                     )
                   }
-                  key={obj.video_id}
+                  key={video.videoId}
                   className={styles.offer_videos_list_item}
                 >
-                  <img src={obj.img_src} height={94} width={168} />
-                  <span>{obj.video_title}</span>
+                  <img src={video.image} height={94} width={168} />
+                  <span>{video.title}</span>
                 </div>
               );
             })}
           </div>
-        )}
+        )} */}
         {showOffer && offerVideos.length == 0 && (
           <div
             ref={offerRef}

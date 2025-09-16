@@ -1,5 +1,3 @@
-import React from "react";
-
 import { useNavigate } from "react-router-dom";
 
 import styles from "./Header.module.scss";
@@ -18,7 +16,7 @@ const Header = () => {
       <div className={styles.help}>
         <svg
           onClick={() => {
-            localStorage.setItem("infoTutorial", true);
+            localStorage.setItem("infoTutorial", "1");
             dispatch(setShowTutorial(true));
           }}
           viewBox="0 0 24 24"

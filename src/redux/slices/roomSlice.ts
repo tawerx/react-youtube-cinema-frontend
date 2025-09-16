@@ -1,9 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
+import type { getUsersDTO } from "../../shared/types";
 
-const initialState = {
+interface initState {
+  roomId: string | null;
+  videoId: string | null;
+  videoTitle: string | null;
+  channel: string | null;
+  users: getUsersDTO[];
+  adminId: number | null;
+  userId: number | null;
+  changeTime: any;
+}
+
+const initialState: initState = {
   roomId: null,
   videoId: "",
   videoTitle: "",
+  channel: "",
   users: [],
   adminId: null,
   userId: null,
@@ -16,6 +29,9 @@ export const roomSlice = createSlice({
   reducers: {
     setVideoId: (state, action) => {
       state.videoId = action.payload;
+    },
+    setChannel: (state, action) => {
+      state.channel = action.payload;
     },
     setVideoTitle: (state, action) => {
       state.videoTitle = action.payload;
@@ -30,10 +46,10 @@ export const roomSlice = createSlice({
       state.userId = action.payload;
     },
     setClearAdmintime: (state) => {
-      clearInterval(state.adminId);
+      state.adminId && clearInterval(state.adminId);
     },
     setClearUsertime: (state) => {
-      clearInterval(state.userId);
+      state.userId && clearInterval(state.userId);
     },
     setChangePauseTime: (state, action) => {
       state.changeTime = action.payload;
@@ -45,13 +61,10 @@ export const roomSlice = createSlice({
       state.roomId = action.payload;
     },
     setUsersTime: (state, action) => {
-      const newUsers = action.payload;
-      newUsers.forEach(({ user_id, current_video_time }) => {
-        state.users.forEach((obj) => {
-          if (obj.user_id == user_id) {
-            obj.current_video_time = current_video_time;
-          }
-        });
+      const time = action.payload;
+      state.users = state.users.map((user) => {
+        user.currentTimeMs = time;
+        return user;
       });
     },
   },
@@ -69,6 +82,7 @@ export const {
   setClearChangePauseTime,
   setRoomId,
   setUsersTime,
+  setChannel,
 } = roomSlice.actions;
 
 export default roomSlice.reducer;

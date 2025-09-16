@@ -1,38 +1,28 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setVideoId, setVideoTitle } from "../../redux/slices/roomSlice";
-import socket from "../../socket.js";
+import { useSelector } from "react-redux";
 
 import styles from "./sidebar.module.scss";
-import Search from "../Search/index.jsx";
+import Search from "../Search/index.js";
+import type { RootState } from "../../redux/store.js";
+import { UserRole, type OfferVideo } from "../../shared/types.js";
+import { getSocket } from "../../socket.js";
 
-const Sidebar = ({ player, offerVideos, setOfferVideos }) => {
-  const dispatch = useDispatch();
-  const { videoId, roomId, users } = useSelector((state) => state.room);
-  const { infoTutorial } = useSelector((state) => state.tutorial);
-  const { role } = useSelector((state) => state.personal);
+interface CompProps {
+  player: YT.Player | null;
+  offerVideos: OfferVideo[];
+  setOfferVideos: React.Dispatch<React.SetStateAction<OfferVideo[]>>;
+}
+
+const Sidebar = ({ player, offerVideos, setOfferVideos }: CompProps) => {
+  const socket = getSocket();
+  const { videoId, roomId, users } = useSelector(
+    (state: RootState) => state.room
+  );
+  const { infoTutorial } = useSelector((state: RootState) => state.tutorial);
+  const { role } = useSelector((state: RootState) => state.personal);
   const [showUsers, setShowUsers] = React.useState(true);
   const [hideDiv, setHideDiv] = React.useState(false);
 
-  const onClickSelectVideo = (videoId, title, image) => {
-    if (role === "admin") {
-      dispatch(setVideoId(videoId));
-      dispatch(setVideoTitle(title));
-      const selectedVideo = {
-        videoId,
-        title,
-        image,
-      };
-      socket.emit("setVideo", { roomId, selectedVideo });
-    } else {
-      const offerVideo = {
-        title,
-        videoId,
-        image,
-      };
-      socket.emit("setOfferVideo", { roomId, offerVideo });
-    }
-  };
   return (
     <div className={styles.sidebar}>
       {player && (
@@ -40,10 +30,10 @@ const Sidebar = ({ player, offerVideos, setOfferVideos }) => {
           className={styles.sync}
           onClick={() => {
             if (videoId) {
-              if (role === "user") {
+              if (role === UserRole.USER) {
                 socket.emit("syncUser", { roomId });
               }
-              if (role === "admin") {
+              if (role === UserRole.ADMIN) {
                 socket.emit("syncAdmin", {
                   roomId,
                   time: player.getCurrentTime(),
@@ -69,7 +59,7 @@ const Sidebar = ({ player, offerVideos, setOfferVideos }) => {
           <ul>
             {users.map((obj) => {
               let time;
-              const objTime = obj.current_video_time;
+              const objTime = obj.currentTimeMs;
 
               if (objTime > 3600) {
                 time = `${Math.trunc(objTime / 3600)}:${
@@ -96,8 +86,8 @@ const Sidebar = ({ player, offerVideos, setOfferVideos }) => {
                 }`;
               }
               return (
-                <li key={obj.user_id}>{`${obj.username}${
-                  obj.rolle == "admin" ? "(admin)" : ""
+                <li key={obj.user.socketId}>{`${obj.user.username}${
+                  obj.role == UserRole.ADMIN ? "(admin)" : ""
                 } - ${time}`}</li>
               );
             })}
