@@ -1,9 +1,7 @@
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { getSocket } from "../../socket";
-import React from "react";
 import { useDispatch } from "react-redux";
-import { setRoomId } from "../../redux/slices/roomSlice";
 import { Controller, useForm } from "react-hook-form";
 import { setNickName } from "../../redux/slices/personalSlice";
 
@@ -26,13 +24,6 @@ export const CreateNickname = ({ roomId }: { roomId: string }) => {
       nickName: "User-" + new Date().getTime().toString(20),
     },
   });
-
-  React.useEffect(() => {
-    socket.on("createRoom:ok", ({ roomId }: { roomId: string }) => {
-      dispatch(setRoomId(roomId));
-      navigate(`/rooms/${roomId}`);
-    });
-  }, []);
 
   return (
     <Stack

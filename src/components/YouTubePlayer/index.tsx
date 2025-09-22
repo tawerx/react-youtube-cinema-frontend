@@ -12,6 +12,7 @@ import {
 import type { RootState } from "../../redux/store.js";
 import { getSocket } from "../../socket.js";
 import { UserRole } from "../../shared/types.js";
+import { Box, Typography } from "@mui/material";
 
 interface CompProps {
   setPlayer: (e: YT.Player) => void;
@@ -20,33 +21,37 @@ interface CompProps {
 const YouTubePlayer = ({ setPlayer }: CompProps) => {
   const socket = getSocket();
   const dispatch = useDispatch();
-  const { videoId, videoTitle, roomId } = useSelector(
+  const { videoId, videoTitle, roomId, channel } = useSelector(
     (state: RootState) => state.room
   );
   const { role } = useSelector((state: RootState) => state.personal);
+  const roleRef = React.useRef<UserRole>(null);
 
   const [widthSize, setWidthSize] = React.useState(window.screen.availWidth);
   const [data3, setData3] = React.useState(false);
   const playerRef = React.useRef<YT.Player>(null);
+
+  React.useEffect(() => {
+    roleRef.current = role;
+  }, [role]);
+
   React.useEffect(() => {
     resize();
 
-    if (role == UserRole.USER) {
-      socket.on(
-        "syncUsersByAdmin",
-        ({ currentTime }: { currentTime: number }) => {
-          if (playerRef.current) {
-            playerRef.current.seekTo(currentTime, true);
-          }
+    socket.on(
+      "syncUsersByAdmin",
+      ({ currentTime }: { currentTime: number }) => {
+        if (playerRef.current && roleRef.current === UserRole.USER) {
+          playerRef.current.seekTo(currentTime, true);
         }
-      );
+      }
+    );
 
-      socket.on("syncUsersToRoomTime", ({ time }: { time: number }) => {
-        if (playerRef.current) {
-          playerRef.current.seekTo(time, true);
-        }
-      });
-    }
+    socket.on("syncUsersToRoomTime", ({ time }: { time: number }) => {
+      if (playerRef.current && roleRef.current === UserRole.USER) {
+        playerRef.current.seekTo(time, true);
+      }
+    });
 
     socket.on("play", () => {
       if (playerRef.current) {
@@ -73,11 +78,12 @@ const YouTubePlayer = ({ setPlayer }: CompProps) => {
     playerRef.current = e.target;
     setPlayer(e.target);
   };
+
   const opts = {
     height:
       window.screen.width < 980
         ? window.screen.height * 0.4
-        : window.screen.height * 0.7,
+        : window.screen.height * 0.65,
     width:
       window.screen.width > 1330
         ? widthSize * 0.6
@@ -87,13 +93,13 @@ const YouTubePlayer = ({ setPlayer }: CompProps) => {
   };
 
   return (
-    <div>
+    <Box sx={{ color: "white" }}>
       <YouTube
         videoId={videoId!}
         onReady={onReady}
         opts={opts}
         onPause={() => {
-          if (role === UserRole.ADMIN) {
+          if (roleRef.current === UserRole.ADMIN) {
             socket.emit("adminPause", { roomId });
           }
 
@@ -120,13 +126,13 @@ const YouTubePlayer = ({ setPlayer }: CompProps) => {
           // );
         }}
         onPlay={() => {
-          if (role === UserRole.ADMIN) {
+          if (roleRef.current === UserRole.ADMIN) {
             socket.emit("adminPlay", { roomId });
           }
           dispatch(setClearChangePauseTime());
         }}
         onStateChange={(e) => {
-          if (e.data == 1 && role == UserRole.ADMIN && !data3) {
+          if (e.data == 1 && roleRef.current === UserRole.ADMIN && !data3) {
             dispatch(
               setAdminTime(
                 setInterval(() => {
@@ -141,7 +147,10 @@ const YouTubePlayer = ({ setPlayer }: CompProps) => {
             );
             setData3(true);
           }
-          if ((e.data == 2 || e.data == 0) && role == UserRole.ADMIN) {
+          if (
+            (e.data == 2 || e.data == 0) &&
+            roleRef.current == UserRole.ADMIN
+          ) {
             dispatch(setClearAdmintime());
             setData3(false);
           }
@@ -166,8 +175,9 @@ const YouTubePlayer = ({ setPlayer }: CompProps) => {
           }
         }}
       />
-      <p>{videoTitle}</p>
-    </div>
+      <Typography variant="h5">{videoTitle}</Typography>
+      <Typography variant="h5">{channel}</Typography>
+    </Box>
   );
 };
 

@@ -19,6 +19,7 @@ export interface OfferVideo {
   title: string;
   videoId: string;
   image: string;
+  channel: string;
 }
 
 export type YouTubeApiV3ListItemResponse = {
@@ -84,3 +85,16 @@ export type getRoomInfoDTO = {
   currentVideoChannel: string;
   currentVideoImageUrl: string;
 };
+
+export type getRequestUsersDTO = {
+  user: {
+    username: string;
+    socketId: string;
+  };
+};
+
+export enum accessToJoinRoom {
+  PENDING = "PENDING",
+  REJECT = "REJECT",
+  ACCEPT = "ACCEPT",
+}

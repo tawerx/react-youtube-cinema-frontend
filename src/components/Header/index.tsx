@@ -1,47 +1,38 @@
 import { useNavigate } from "react-router-dom";
-
-import styles from "./Header.module.scss";
-import { useDispatch } from "react-redux";
-import { setShowTutorial } from "../../redux/slices/tutorialSlice";
+import { Box, Typography } from "@mui/material";
 
 const Header = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   return (
-    <div className={styles.header}>
-      <div onClick={() => navigate("/")} className={styles.header_title}>
-        <p>YouTube Cinema</p>
-      </div>
-      <div className={styles.help}>
-        <svg
-          onClick={() => {
-            localStorage.setItem("infoTutorial", "1");
-            dispatch(setShowTutorial(true));
-          }}
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="#ffffff"
-        >
-          <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-          <g
-            id="SVGRepo_tracerCarrier"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></g>
-          <g id="SVGRepo_iconCarrier">
-            <path
-              d="M12 8V8.5M12 12V16M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z"
-              stroke="#ffffff"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            ></path>
-          </g>
-        </svg>
-      </div>
-    </div>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        padding: 2,
+        backgroundColor: "#000000",
+        borderBottomLeftRadius: 30,
+        borderBottomRightRadius: 30,
+        width: "90%",
+        margin: "0 auto",
+        color: "white",
+      }}
+    >
+      <Typography
+        variant="h3"
+        onClick={() => navigate("/")}
+        sx={{
+          cursor: "pointer",
+          textShadow: "2px 0px 10px rgba(255, 255, 255, 0.35)",
+          transition: "text-shadow 2s",
+          "&:hover": {
+            textShadow: "1px 0px 30px rgba(255, 255, 255, 1)",
+          },
+        }}
+      >
+        YouTube Cinema
+      </Typography>
+    </Box>
   );
 };
 

@@ -51,6 +51,7 @@ export const RoomsPage = () => {
 
     return () => {
       socket.off("getRooms:ok", handleRooms);
+      socket.emit("socketLeaveRoomsPage");
     };
   }, []);
 

@@ -20,23 +20,16 @@ import { destroySocket, getSocket } from "../../socket";
 import {
   UserRole,
   type getRoomInfoDTO,
-  type getUsersDTO,
+  type OfferVideo,
 } from "../../shared/types";
 import { Box, Typography } from "@mui/material";
 import sandclock from "../../assets/sandclock.gif";
-
-interface OfferVideo {
-  title: string;
-  videoId: string;
-  image: string;
-}
 
 export const Room = () => {
   const dispatch = useDispatch();
   const [offerVideos, setOfferVideos] = React.useState<OfferVideo[]>([]);
   const { videoId, roomId } = useSelector((state: RootState) => state.room);
   const { role } = useSelector((state: RootState) => state.personal);
-  // const { showTutorial } = useSelector((state: RootState) => state.tutorial);
   const playerRef = React.useRef<YT.Player>(null);
   const roleRef = React.useRef<UserRole>(null);
 
@@ -49,33 +42,32 @@ export const Room = () => {
 
     socket.emit("getRoomInfo", { roomId });
 
-    socket.on("role", ({ role }: { role: UserRole }) => {
-      console.log(role);
+    const handleSetRole = ({ role }: { role: UserRole }) => {
       dispatch(setRole(role));
-    });
+    };
 
-    socket.on("getUsers", ({ users }: { users: getUsersDTO[] }) => {
-      dispatch(setUsers(users));
-    });
-
-    socket.on("getUsersTime", ({ currentTime }: { currentTime: number }) => {
+    const handleGetUsersTime = ({ currentTime }: { currentTime: number }) => {
       dispatch(setUsersTime(currentTime));
-    });
+    };
 
-    socket.on("getInfo", ({ roomInfo }: { roomInfo: getRoomInfoDTO }) => {
-      // setOfferVideos(roomInfo.quene);
+    const handleGetInfo = ({ roomInfo }: { roomInfo: getRoomInfoDTO }) => {
       dispatch(setVideoTitle(roomInfo.currentVideoTitle));
       dispatch(setVideoId(roomInfo.currentVideoId));
       dispatch(setChannel(roomInfo.currentVideoChannel));
-    });
+    };
 
-    socket.on("getVideo", ({ video }: { video: getRoomInfoDTO }) => {
+    const handleGetVideo = ({ video }: { video: getRoomInfoDTO }) => {
       if (roleRef.current === UserRole.USER) {
         dispatch(setVideoId(video.currentVideoId));
         dispatch(setVideoTitle(video.currentVideoTitle));
         dispatch(setChannel(video.currentVideoChannel));
       }
-    });
+    };
+
+    socket.on("role", handleSetRole);
+    socket.on("getUsersTime", handleGetUsersTime);
+    socket.on("getInfo", handleGetInfo);
+    socket.on("getVideo", handleGetVideo);
 
     // socket.on("getOfferVideos", (data) => {
     //   setOfferVideos(data);
@@ -83,6 +75,11 @@ export const Room = () => {
 
     return () => {
       socket.emit("disconnectRoom");
+      socket.off("role", handleSetRole);
+      socket.off("getUsersTime", handleGetUsersTime);
+      socket.off("getInfo", handleGetInfo);
+      socket.off("getVideo", handleGetVideo);
+
       destroySocket();
       dispatch(setClearAdmintime());
       dispatch(setClearUsertime());
@@ -105,6 +102,7 @@ export const Room = () => {
       sx={{
         display: "flex",
         width: "250%",
+        height: "80vh",
         alignItems: "center",
         justifyContent: "center",
         color: "white",
@@ -161,21 +159,20 @@ export const Room = () => {
         }}
       ></Box>
       <Typography component={"span"}>
-        Осталось совсем немного, выберите ролик в поиске выше
+        Осталось совсем немного, выберите ролик в поиске
       </Typography>
     </Box>
   );
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      {/* {showTutorial && !modalVis && <Tutorial />} */}
       <Header />
 
       <Box
         sx={{
           display: "flex",
           flexDirection: "row",
-          gap: "10px",
+          gap: "30px",
           justifyContent: "center",
           margin: "0 auto",
           width: "95%",

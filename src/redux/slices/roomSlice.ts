@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { getUsersDTO } from "../../shared/types";
+import type { getRequestUsersDTO, getUsersDTO } from "../../shared/types";
 
 interface initState {
   roomId: string | null;
@@ -7,6 +7,7 @@ interface initState {
   videoTitle: string | null;
   channel: string | null;
   users: getUsersDTO[];
+  requestUsers: getRequestUsersDTO[];
   adminId: number | null;
   userId: number | null;
   changeTime: any;
@@ -18,6 +19,7 @@ const initialState: initState = {
   videoTitle: "",
   channel: "",
   users: [],
+  requestUsers: [],
   adminId: null,
   userId: null,
   changeTime: null,
@@ -36,8 +38,15 @@ export const roomSlice = createSlice({
     setVideoTitle: (state, action) => {
       state.videoTitle = action.payload;
     },
-    setUsers: (state, action) => {
-      state.users = action.payload;
+    setUsers: (state, action: { payload: getUsersDTO[] }) => {
+      state.users = action.payload.sort((a, b) =>
+        b.user.socketId.localeCompare(a.user.socketId)
+      );
+    },
+    setRequestUsers: (state, action: { payload: getRequestUsersDTO[] }) => {
+      state.requestUsers = action.payload.sort((a, b) =>
+        b.user.socketId.localeCompare(a.user.socketId)
+      );
     },
     setAdminTime: (state, action) => {
       state.adminId = action.payload;
@@ -74,6 +83,7 @@ export const {
   setVideoId,
   setVideoTitle,
   setUsers,
+  setRequestUsers,
   setAdminTime,
   setClearAdmintime,
   setUserTime,
