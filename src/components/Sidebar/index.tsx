@@ -9,11 +9,9 @@ import { UsersSidebar } from "../UsersSidebar/index.js";
 
 interface CompProps {
   player: YT.Player | null;
-  offerVideos: OfferVideo[];
-  setOfferVideos: React.Dispatch<React.SetStateAction<OfferVideo[]>>;
 }
 
-const Sidebar = ({ player, offerVideos, setOfferVideos }: CompProps) => {
+const Sidebar = ({ player }: CompProps) => {
   const socket = getSocket();
   const { videoId, roomId } = useSelector((state: RootState) => state.room);
 
@@ -56,7 +54,7 @@ const Sidebar = ({ player, offerVideos, setOfferVideos }: CompProps) => {
 
       <UsersSidebar />
 
-      <Search offerVideos={offerVideos} setOfferVideos={setOfferVideos} />
+      <Search />
     </Box>
   );
 };

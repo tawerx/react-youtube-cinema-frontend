@@ -20,6 +20,8 @@ export interface OfferVideo {
   videoId: string;
   image: string;
   channel: string;
+  duractionIso: string;
+  duractionSec: number;
 }
 
 export type YouTubeApiV3ListItemResponse = {
@@ -84,6 +86,8 @@ export type getRoomInfoDTO = {
   currentVideoTimeMs: number;
   currentVideoChannel: string;
   currentVideoImageUrl: string;
+  duractionIso: string;
+  duractionSec: number;
 };
 
 export type getRequestUsersDTO = {
@@ -98,3 +102,27 @@ export enum accessToJoinRoom {
   REJECT = "REJECT",
   ACCEPT = "ACCEPT",
 }
+
+export type YouTubeApiV3VideoListItemResponse = {
+  kind: string;
+  etag: string;
+  id: string;
+  contentDetails: {
+    duration: string;
+    dimension: string;
+    definition: string;
+    caption: boolean;
+    licensedContent: boolean;
+    contentRating: {};
+    projection: string;
+  };
+};
+
+export type SearchVideoCardVideo = {
+  title: string;
+  videoId: string;
+  imageUrl: string;
+  channel: string;
+  duractionIso: string;
+  duractionSec: number;
+};

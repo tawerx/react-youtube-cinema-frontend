@@ -8,6 +8,8 @@ interface initState {
   channel: string | null;
   users: getUsersDTO[];
   requestUsers: getRequestUsersDTO[];
+  duractionIso: string;
+  duractionSec: number;
   adminId: number | null;
   userId: number | null;
   changeTime: any;
@@ -20,6 +22,8 @@ const initialState: initState = {
   channel: "",
   users: [],
   requestUsers: [],
+  duractionIso: "",
+  duractionSec: 0,
   adminId: null,
   userId: null,
   changeTime: null,
@@ -76,6 +80,10 @@ export const roomSlice = createSlice({
         return user;
       });
     },
+    setDuraction: (state, action) => {
+      state.duractionIso = action.payload.duractionIso;
+      state.duractionSec = action.payload.duractionSec;
+    },
   },
 });
 
@@ -93,6 +101,7 @@ export const {
   setRoomId,
   setUsersTime,
   setChannel,
+  setDuraction,
 } = roomSlice.actions;
 
 export default roomSlice.reducer;

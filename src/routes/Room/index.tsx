@@ -6,6 +6,7 @@ import {
   setClearAdmintime,
   setClearChangePauseTime,
   setClearUsertime,
+  setDuraction,
   setRoomId,
   setUsers,
   setUsersTime,
@@ -17,17 +18,12 @@ import YouTubePlayer from "../../components/YouTubePlayer";
 import type { RootState } from "../../redux/store";
 import Sidebar from "../../components/Sidebar";
 import { destroySocket, getSocket } from "../../socket";
-import {
-  UserRole,
-  type getRoomInfoDTO,
-  type OfferVideo,
-} from "../../shared/types";
+import { UserRole, type getRoomInfoDTO } from "../../shared/types";
 import { Box, Typography } from "@mui/material";
 import sandclock from "../../assets/sandclock.gif";
 
 export const Room = () => {
   const dispatch = useDispatch();
-  const [offerVideos, setOfferVideos] = React.useState<OfferVideo[]>([]);
   const { videoId, roomId } = useSelector((state: RootState) => state.room);
   const { role } = useSelector((state: RootState) => state.personal);
   const playerRef = React.useRef<YT.Player>(null);
@@ -61,6 +57,12 @@ export const Room = () => {
         dispatch(setVideoId(video.currentVideoId));
         dispatch(setVideoTitle(video.currentVideoTitle));
         dispatch(setChannel(video.currentVideoChannel));
+        dispatch(
+          setDuraction({
+            duractionIso: video.duractionIso,
+            duractionSec: video.duractionSec,
+          })
+        );
       }
     };
 
@@ -68,10 +70,6 @@ export const Room = () => {
     socket.on("getUsersTime", handleGetUsersTime);
     socket.on("getInfo", handleGetInfo);
     socket.on("getVideo", handleGetVideo);
-
-    // socket.on("getOfferVideos", (data) => {
-    //   setOfferVideos(data);
-    // });
 
     return () => {
       socket.emit("disconnectRoom");
@@ -184,11 +182,7 @@ export const Room = () => {
         }}
       >
         {videoId ? player : role == UserRole.USER ? userWaiting : adminWaiting}
-        <Sidebar
-          player={playerRef.current}
-          offerVideos={offerVideos}
-          setOfferVideos={setOfferVideos}
-        />
+        <Sidebar player={playerRef.current} />
       </Box>
     </Box>
   );

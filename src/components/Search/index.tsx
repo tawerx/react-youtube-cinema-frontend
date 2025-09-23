@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import {
   setChannel,
+  setDuraction,
   setVideoId,
   setVideoTitle,
 } from "../../redux/slices/roomSlice";
@@ -11,7 +12,9 @@ import { debounce } from "@mui/material/utils";
 import {
   UserRole,
   type OfferVideo,
+  type SearchVideoCardVideo,
   type YouTubeApiV3ListItemResponse,
+  type YouTubeApiV3VideoListItemResponse,
 } from "../../shared/types";
 import type { RootState } from "../../redux/store";
 import { getSocket } from "../../socket";
@@ -19,23 +22,60 @@ import { Box, IconButton, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ExploreIcon from "@mui/icons-material/Explore";
 import { Controller, get, useForm } from "react-hook-form";
-
-interface CompProps {
-  offerVideos: OfferVideo[];
-  setOfferVideos: React.Dispatch<React.SetStateAction<OfferVideo[]>>;
-}
+import { isoDurationToSeconds } from "../../shared/utils";
+import { SearchVideoCard } from "../SearchVideoCard";
 
 interface SearchInput {
   search: string;
 }
 
-const Search = ({ offerVideos, setOfferVideos }: CompProps) => {
+const getYouTubeVideos = async (searchValue: string) => {
+  try {
+    const { items } = (
+      await axios.get<{ items: YouTubeApiV3ListItemResponse[] }>(
+        `https://www.googleapis.com/youtube/v3/search?key=${
+          import.meta.env.VITE_YOUTUBE_API_KEY
+        }&type=video&part=snippet&maxResults=9&q=${searchValue}`
+      )
+    ).data;
+
+    const videoIds = items.map((item) => item.id.videoId).join(",");
+    const duractions = (
+      await axios.get<{ items: YouTubeApiV3VideoListItemResponse[] }>(
+        `https://www.googleapis.com/youtube/v3/videos?key=${
+          import.meta.env.VITE_YOUTUBE_API_KEY
+        }&part=contentDetails&id=${videoIds}`
+      )
+    ).data;
+
+    return items.map((item) => {
+      const duraction = duractions.items.find(
+        (duraction) => duraction.id === item.id.videoId
+      );
+      return {
+        ...item,
+        videoDuractionIso: duraction!.contentDetails.duration,
+        videoDuractionSec: isoDurationToSeconds(
+          duraction!.contentDetails.duration
+        ),
+      };
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const Search = () => {
   const socket = getSocket();
   const dispatch = useDispatch();
   const [searchUrl, setSearchUrl] = React.useState("tom jerry");
   const [searchedVideos, setSearchedVideos] = React.useState<
-    YouTubeApiV3ListItemResponse[]
+    (YouTubeApiV3ListItemResponse & {
+      videoDuractionIso: string;
+      videoDuractionSec: number;
+    })[]
   >([]);
+  const [offerVideos, setOfferVideos] = React.useState<OfferVideo[]>([]);
 
   const [showOffer, setShowOffer] = React.useState(false);
   const { offerTutorial } = useSelector((state: RootState) => state.tutorial);
@@ -51,7 +91,7 @@ const Search = ({ offerVideos, setOfferVideos }: CompProps) => {
     []
   );
 
-  const { control, getValues } = useForm<SearchInput>({
+  const { control } = useForm<SearchInput>({
     defaultValues: {
       search: "",
     },
@@ -60,14 +100,18 @@ const Search = ({ offerVideos, setOfferVideos }: CompProps) => {
   const onClickSelectVideo = (
     title: string,
     videoId: string,
-    image: string,
+    imageUrl: string,
     channel: string,
-    _offer?: boolean
+    duractionIso: string,
+    duractionSec: number,
+    clickOnOfferVideo?: boolean
   ) => {
     const selectedVideo = {
       videoId,
       title,
-      image,
+      imageUrl,
+      duractionIso,
+      duractionSec,
       channel,
     };
 
@@ -75,9 +119,10 @@ const Search = ({ offerVideos, setOfferVideos }: CompProps) => {
       dispatch(setVideoId(videoId));
       dispatch(setVideoTitle(title));
       dispatch(setChannel(channel));
+      dispatch(setDuraction({ duractionIso, duractionSec }));
 
       socket.emit("setVideo", { roomId, selectedVideo });
-      if (_offer) {
+      if (clickOnOfferVideo) {
         setOfferVideos(offerVideos.filter((obj) => obj.videoId != videoId));
         socket.emit("deleteOfferVideo", { roomId, videoId });
       }
@@ -87,15 +132,26 @@ const Search = ({ offerVideos, setOfferVideos }: CompProps) => {
   };
 
   React.useEffect(() => {
-    axios
-      .get(
-        `https://www.googleapis.com/youtube/v3/search?key=${
-          import.meta.env.VITE_YOUTUBE_API_KEY
-        }&type=video&part=snippet&maxResults=9&q=${searchUrl}`
-      )
-      .then((res) => {
-        setSearchedVideos(res.data.items);
-      });
+    const handleGetOfferVideos = ({ videos }: { videos: OfferVideo[] }) => {
+      setOfferVideos(videos);
+    };
+    socket.on("getOfferVideos", handleGetOfferVideos);
+
+    return () => {
+      socket.off("getOfferVideos", handleGetOfferVideos);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    getYouTubeVideos(searchUrl)
+      .then((videos) => {
+        if (videos) {
+          setSearchedVideos(videos);
+        } else {
+          throw new Error("Videos is undefiend");
+        }
+      })
+      .catch((error) => console.log(error));
   }, [searchUrl]);
 
   return (
@@ -196,26 +252,20 @@ const Search = ({ offerVideos, setOfferVideos }: CompProps) => {
       {!showOffer ? (
         <Box className={styles.search_list}>
           {searchedVideos.map((obj) => {
+            const video: SearchVideoCardVideo = {
+              channel: obj.snippet.channelTitle,
+              duractionIso: obj.videoDuractionIso,
+              duractionSec: obj.videoDuractionSec,
+              imageUrl: obj.snippet.thumbnails.medium.url,
+              title: obj.snippet.title,
+              videoId: obj.id.videoId,
+            };
             return (
-              <Box
-                key={obj.id.videoId}
-                onClick={() =>
-                  onClickSelectVideo(
-                    obj.snippet.title,
-                    obj.id.videoId,
-                    obj.snippet.thumbnails.medium.url,
-                    obj.snippet.channelTitle
-                  )
-                }
-                className={styles.search_list_video}
-              >
-                <img
-                  src={obj.snippet.thumbnails.medium.url}
-                  height={94}
-                  width={168}
-                />
-                <span>{obj.snippet.title}</span>
-              </Box>
+              <SearchVideoCard
+                key={video.videoId}
+                video={video}
+                onClickSelectVideo={onClickSelectVideo}
+              />
             );
           })}
         </Box>
@@ -227,30 +277,26 @@ const Search = ({ offerVideos, setOfferVideos }: CompProps) => {
               : styles.offer_videos
           }
         >
-          {/* {showOffer && offerVideos.length > 0 && (
-          <Box ref={offerRef} className={styles.offer_videos_list}>
-            {offerVideos.map((video) => {
+          <Box className={styles.offer_videos_list}>
+            {offerVideos.map((obj) => {
+              const video: SearchVideoCardVideo = {
+                channel: obj.channel,
+                duractionIso: obj.duractionIso,
+                duractionSec: obj.duractionSec,
+                imageUrl: obj.image,
+                title: obj.title,
+                videoId: obj.videoId,
+              };
               return (
-                <Box
-                  onClick={() =>
-                    onClickSelectVideo(
-                      video.title,
-                      video.videoId,
-                      video.image,
-                      video.snippet.channelTitle,
-                      true
-                    )
-                  }
+                <SearchVideoCard
                   key={video.videoId}
-                  className={styles.offer_videos_list_item}
-                >
-                  <img src={video.image} height={94} width={168} />
-                  <span>{video.title}</span>
-                </Box>
+                  video={video}
+                  onClickSelectVideo={onClickSelectVideo}
+                  clickOnOfferVideo={true}
+                />
               );
             })}
           </Box>
-        )} */}
         </Box>
       )}
     </Box>
