@@ -15,6 +15,7 @@ import type { OnlineRooms } from "../../shared/types";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { setNickName } from "../../redux/slices/personalSlice";
+import Header from "../../components/Header";
 
 type NickInput = {
   nickName: string;
@@ -65,33 +66,7 @@ export const RoomsPage = () => {
           gap: 6,
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            padding: 2,
-            backgroundColor: "#000000",
-            borderBottomLeftRadius: 30,
-            borderBottomRightRadius: 30,
-            width: "100%",
-          }}
-        >
-          <Typography
-            variant="h3"
-            onClick={() => navigate("/")}
-            sx={{
-              cursor: "pointer",
-              textShadow: "2px 0px 10px rgba(255, 255, 255, 0.35)",
-              transition: "text-shadow 2s",
-              "&:hover": {
-                textShadow: "1px 0px 30px rgba(255, 255, 255, 1)",
-              },
-              color: "white",
-            }}
-          >
-            YouTube Cinema
-          </Typography>
-        </Box>
+        <Header />
         <Box
           sx={{
             width: "90%",

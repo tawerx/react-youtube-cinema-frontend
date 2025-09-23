@@ -28,6 +28,9 @@ const Header = () => {
           "&:hover": {
             textShadow: "1px 0px 30px rgba(255, 255, 255, 1)",
           },
+          "@media (max-width: 490px)": {
+            fontSize: "25px",
+          },
         }}
       >
         YouTube Cinema

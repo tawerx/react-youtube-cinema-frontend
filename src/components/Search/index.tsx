@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "./Search.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import {
@@ -21,7 +20,7 @@ import { getSocket } from "../../socket";
 import { Box, IconButton, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ExploreIcon from "@mui/icons-material/Explore";
-import { Controller, get, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { isoDurationToSeconds } from "../../shared/utils";
 import { SearchVideoCard } from "../SearchVideoCard";
 
@@ -78,7 +77,7 @@ const Search = () => {
   const [offerVideos, setOfferVideos] = React.useState<OfferVideo[]>([]);
 
   const [showOffer, setShowOffer] = React.useState(false);
-  const { offerTutorial } = useSelector((state: RootState) => state.tutorial);
+  // const { offerTutorial } = useSelector((state: RootState) => state.tutorial);
   const { roomId } = useSelector((state: RootState) => state.room);
   const { role } = useSelector((state: RootState) => state.personal);
 
@@ -249,44 +248,43 @@ const Search = () => {
         </Box>
       </Box>
 
-      {!showOffer ? (
-        <Box className={styles.search_list}>
-          {searchedVideos.map((obj) => {
-            const video: SearchVideoCardVideo = {
-              channel: obj.snippet.channelTitle,
-              duractionIso: obj.videoDuractionIso,
-              duractionSec: obj.videoDuractionSec,
-              imageUrl: obj.snippet.thumbnails.medium.url,
-              title: obj.snippet.title,
-              videoId: obj.id.videoId,
-            };
-            return (
-              <SearchVideoCard
-                key={video.videoId}
-                video={video}
-                onClickSelectVideo={onClickSelectVideo}
-              />
-            );
-          })}
-        </Box>
-      ) : (
-        <Box
-          className={
-            offerTutorial
-              ? `${styles.offer_videos} ${styles.tutorial}`
-              : styles.offer_videos
-          }
-        >
-          <Box className={styles.offer_videos_list}>
-            {offerVideos.map((obj) => {
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 1,
+          overflow: "auto",
+          padding: "5px",
+        }}
+      >
+        {!showOffer
+          ? searchedVideos.map((obj) => {
+              const video: SearchVideoCardVideo = {
+                channel: obj.snippet.channelTitle,
+                duractionIso: obj.videoDuractionIso,
+                duractionSec: obj.videoDuractionSec,
+                imageUrl: obj.snippet.thumbnails.medium.url,
+                title: obj.snippet.title,
+                videoId: obj.id.videoId,
+              };
+              return (
+                <SearchVideoCard
+                  key={video.videoId}
+                  video={video}
+                  onClickSelectVideo={onClickSelectVideo}
+                />
+              );
+            })
+          : offerVideos.map((obj) => {
               const video: SearchVideoCardVideo = {
                 channel: obj.channel,
-                duractionIso: obj.duractionIso,
-                duractionSec: obj.duractionSec,
-                imageUrl: obj.image,
+                duractionIso: obj.durationIso,
+                duractionSec: obj.durationSec,
+                imageUrl: obj.imageUrl,
                 title: obj.title,
                 videoId: obj.videoId,
               };
+              console.log(obj);
               return (
                 <SearchVideoCard
                   key={video.videoId}
@@ -296,9 +294,7 @@ const Search = () => {
                 />
               );
             })}
-          </Box>
-        </Box>
-      )}
+      </Box>
     </Box>
   );
 };

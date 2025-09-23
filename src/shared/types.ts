@@ -18,10 +18,10 @@ export type UserDTO = {
 export interface OfferVideo {
   title: string;
   videoId: string;
-  image: string;
+  imageUrl: string;
   channel: string;
-  duractionIso: string;
-  duractionSec: number;
+  durationIso: string;
+  durationSec: number;
 }
 
 export type YouTubeApiV3ListItemResponse = {
@@ -66,6 +66,8 @@ export type OnlineRooms = {
   currentVideoTimeMs: number;
   currentVideoChannel: string;
   currentVideoImageUrl: string;
+  durationIso: string;
+  durationSec: number;
   _count: {
     members: number;
   };

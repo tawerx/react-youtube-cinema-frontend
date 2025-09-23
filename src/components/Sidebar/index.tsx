@@ -1,8 +1,7 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import Search from "../Search/index.js";
 import type { RootState } from "../../redux/store.js";
-import { UserRole, type OfferVideo } from "../../shared/types.js";
+import { UserRole } from "../../shared/types.js";
 import { getSocket } from "../../socket.js";
 import { Box, Button } from "@mui/material";
 import { UsersSidebar } from "../UsersSidebar/index.js";
@@ -25,6 +24,10 @@ const Sidebar = ({ player }: CompProps) => {
         gap: 2,
         minWidth: "30vw",
         maxWidth: "30vw",
+        "@media (max-width: 1330px)": {
+          minWidth: "90vw",
+          maxWidth: "90vw",
+        },
       }}
     >
       {player && (

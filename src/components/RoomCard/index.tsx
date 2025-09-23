@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../redux/store";
 import { getSocket } from "../../socket";
 import { setRoomId } from "../../redux/slices/roomSlice";
+import { formatSeconds } from "../../shared/utils";
 
 interface Props {
   roomInfo: OnlineRooms;
@@ -18,12 +19,13 @@ export const RoomCard = ({ roomInfo }: Props) => {
   const {
     id,
     currentVideoTitle,
-    currentVideoTimeMs,
     currentVideoChannel,
     currentVideoImageUrl,
+    durationSec,
     _count,
   } = roomInfo;
 
+  console.log(roomInfo);
   const navigate = useNavigate();
   const { nickName } = useSelector((state: RootState) => state.personal);
 
@@ -58,7 +60,7 @@ export const RoomCard = ({ roomInfo }: Props) => {
             padding: "4px",
           }}
         >
-          <Typography>{currentVideoTimeMs}</Typography>
+          <Typography>{formatSeconds(durationSec)}</Typography>
         </Box>
       </Box>
 

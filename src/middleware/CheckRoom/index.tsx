@@ -38,7 +38,7 @@ const CheckRoom = ({ children }: CompProps) => {
     }) => {
       dispatch(setRoomId(roomid));
       setVisibility(visibility);
-      setExist((prev) => (prev = answer));
+      setExist(answer);
       if (nickName) {
         socket.emit("joinRoom", { roomId: roomid, nickName: nickName });
       }

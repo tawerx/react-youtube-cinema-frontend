@@ -48,7 +48,7 @@ export const SearchVideoCard = ({
           src={video.imageUrl}
           height={94}
           width={168}
-          sx={{ position: "relative" }}
+          sx={{ position: "relative", borderRadius: "5px" }}
         ></Box>
 
         <Typography
@@ -74,7 +74,7 @@ export const SearchVideoCard = ({
       >
         <Tooltip title={video.title}>
           <Typography
-            variant="caption"
+            variant="body1"
             sx={{
               display: "-webkit-box",
               WebkitLineClamp: 2,
@@ -94,6 +94,7 @@ export const SearchVideoCard = ({
               WebkitLineClamp: 2,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
+              color: "rgba(255, 255, 255, 0.6)",
             }}
           >
             {video.channel}

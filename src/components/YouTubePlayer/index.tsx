@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import YouTube, { type YouTubeEvent } from "react-youtube";
 import {
   setAdminTime,
-  setChangePauseTime,
   setClearAdmintime,
   setClearChangePauseTime,
   setClearUsertime,
@@ -175,8 +174,10 @@ const YouTubePlayer = ({ setPlayer }: CompProps) => {
           }
         }}
       />
-      <Typography variant="h5">{videoTitle}</Typography>
-      <Typography variant="h5">{channel}</Typography>
+      <Typography variant="h6">{videoTitle}</Typography>
+      <Typography variant="body1" sx={{ color: "gray" }}>
+        {channel}
+      </Typography>
     </Box>
   );
 };

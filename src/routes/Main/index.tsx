@@ -6,6 +6,7 @@ import LiveTvIcon from "@mui/icons-material/LiveTv";
 import borderImg from "../../assets/border.png";
 import React from "react";
 import { createSocket, destroySocket } from "../../socket";
+import Header from "../../components/Header";
 
 export const Main = () => {
   const navigate = useNavigate();
@@ -27,32 +28,7 @@ export const Main = () => {
           gap: 10,
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            padding: 2,
-            backgroundColor: "#000000",
-            borderBottomLeftRadius: 30,
-            borderBottomRightRadius: 30,
-            width: "100%",
-          }}
-        >
-          <Typography
-            variant="h3"
-            onClick={() => navigate("/")}
-            sx={{
-              cursor: "pointer",
-              textShadow: "2px 0px 10px rgba(255, 255, 255, 0.35)",
-              transition: "text-shadow 2s",
-              "&:hover": {
-                textShadow: "1px 0px 30px rgba(255, 255, 255, 1)",
-              },
-            }}
-          >
-            YouTube Cinema
-          </Typography>
-        </Box>
+        <Header />
         <Box>
           <Button
             variant="contained"
@@ -86,17 +62,38 @@ export const Main = () => {
           sx={{
             borderStyle: "solid",
             borderImage: `url(${borderImg}) 1`,
-            width: "60%",
-            height: 400,
+            width: "50vw",
+            minHeight: 400,
             display: "flex",
             flexDirection: "column",
             gap: 10,
             alignItems: "center",
             padding: 2,
+
+            "@media (max-width: 1450px)": {
+              width: "70vw",
+            },
+            "@media (max-width: 1230px)": {
+              width: "80vw",
+            },
+            "@media (max-width: 550px)": {
+              width: "90vw",
+            },
           }}
         >
           <Typography variant="h6">Что такое YouTube Cinema?</Typography>
-          <Box sx={{ display: "flex", flexDirection: "row", gap: 4 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              gap: 4,
+              "@media(max-width: 550px)": {
+                flexDirection: "column",
+                padding: 2,
+                gap: 10,
+              },
+            }}
+          >
             <Box
               sx={{
                 display: "flex",
