@@ -5,7 +5,7 @@ let socket: Socket<any> | null = null;
 export const createSocket = () => {
   if (socket) return socket;
 
-  socket = io(import.meta.env.VITE_SOCKET_ORIGIN, {
+  socket = io({
     transports: ["websocket"],
     autoConnect: false,
     reconnection: true,
